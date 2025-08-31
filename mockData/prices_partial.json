@@ -1,0 +1,14 @@
+{
+  "prices": {
+    "BTC": {
+      "currentPrice": 63321.12,
+      "price24hAgo": 62010.05,
+      "lastUpdated": "2025-08-31T12:06:00Z"
+    },
+    "ETH": {
+      "currentPrice": 3265.44,
+      "price24hAgo": 3199.7,
+      "lastUpdated": "2025-08-31T12:05:45Z"
+    }
+  }
+}

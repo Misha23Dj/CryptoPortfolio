@@ -1,7 +1,9 @@
+import ScreenContainer from "@/components/ScreenContainer";
+import ThemeProvider from "@/theme/ThemeProvider";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const RootLayout = () => {
   const [loaded] = useFonts({
@@ -14,12 +16,15 @@ const RootLayout = () => {
   }
 
   return (
-    <>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-      </Stack>
-      <StatusBar style="auto" />
-    </>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <ScreenContainer>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" />
+          </Stack>
+        </ScreenContainer>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 };
 
