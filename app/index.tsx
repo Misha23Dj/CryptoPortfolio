@@ -1,11 +1,2 @@
-import { Text, View } from "react-native";
-
-const AppDisplay = () => {
-  return (
-    <View style={{ justifyContent: "center", flex: 1, alignItems: "center" }}>
-      <Text>Hello World</Text>
-    </View>
-  );
-};
-
+import AppDisplay from "../components/AppDisplay";
 export default AppDisplay;
