@@ -12,7 +12,7 @@ import Empty from "./Empty";
 import { Scenario } from "./utils/getPortfolio";
 import { SortMode, sortRows } from "./utils/sortRows";
 
-const HoldingsList: React.FC<{ testID?: string }> = ({ testID }) => {
+const HoldingsList: React.FC<{}> = () => {
   const theme = useTheme();
   const [scenario] = useState<Scenario>("random");
   const [sortMode] = useState<SortMode>("value");
@@ -28,7 +28,7 @@ const HoldingsList: React.FC<{ testID?: string }> = ({ testID }) => {
   if (!isFetching && rows.length === 0) return <Empty />;
 
   return (
-    <View testID={testID} style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       {error ? (
         <ErrorBanner
           message={error instanceof Error ? error.message : "Error"}
