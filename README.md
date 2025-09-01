@@ -22,3 +22,16 @@ Open the QR in Expo Go on your device
 ```bash
 npm run test
 ```
+
+## Demo
+
+<p align="center">
+  <img src="docs/demo-ios.gif" width="320" alt="iOS demo" />
+  <img src="docs/demo-android.gif" width="320" alt="Android demo" />
+</p>
+
+<p align="center">
+  <img src="docs/ios-1.png" width="280" alt="iOS header" />
+  <img src="docs/ios-2.png" width="280" alt="iOS list" />
+  <img src="docs/android-screenshot.png" width="280" alt="Android screenshot" />
+</p>
