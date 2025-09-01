@@ -2,11 +2,11 @@ import { useTheme } from "@/theme/ThemeProvider";
 import ThemeToggle from "@/theme/ThemeToggle";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { Scenario } from "../utils/getPortfolio";
 import MetricStat from "./MetricStat";
-import { Scenario } from "./utils/getPortfolio";
 
-import { formatRelativeTime } from "./utils/formatRelativeTime";
-import { usePortfolioQuery } from "./utils/usePortfolioQuery";
+import { usePortfolioQuery } from "../../queries/usePortfolioQuery";
+import { formatRelativeTime } from "../utils/formatRelativeTime";
 
 type Props = { scenario: Scenario };
 

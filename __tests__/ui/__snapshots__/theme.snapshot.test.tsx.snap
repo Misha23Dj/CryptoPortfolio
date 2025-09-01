@@ -1,0 +1,175 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`switches theme and updates snapshot 1`] = `
+<View
+  style={
+    {
+      "backgroundColor": "#ffffff",
+      "padding": 8,
+    }
+  }
+>
+  <Text
+    style={
+      {
+        "color": "#0f172a",
+      }
+    }
+  >
+    Demo
+  </Text>
+  <View
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    hitSlop={8}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      [
+        {
+          "alignItems": "center",
+          "backgroundColor": "transparent",
+          "borderRadius": 12,
+          "justifyContent": "center",
+        },
+      ]
+    }
+    testID="theme-toggle"
+  >
+    <ViewManagerAdapter_SymbolModule
+      animated={false}
+      colors={[]}
+      name="moon.fill"
+      size={24}
+      style={
+        [
+          {
+            "height": 24,
+            "width": 24,
+          },
+          {
+            "height": 24,
+            "width": 24,
+          },
+        ]
+      }
+      tint={4279179050}
+      tintColor="#0f172a"
+      type="monochrome"
+    />
+  </View>
+</View>
+`;
+
+exports[`switches theme and updates snapshot 2`] = `
+<View
+  style={
+    {
+      "backgroundColor": "#0b1220",
+      "padding": 8,
+    }
+  }
+>
+  <Text
+    style={
+      {
+        "color": "#e5e7eb",
+      }
+    }
+  >
+    Demo
+  </Text>
+  <View
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": undefined,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    hitSlop={8}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      [
+        {
+          "alignItems": "center",
+          "backgroundColor": "transparent",
+          "borderRadius": 12,
+          "justifyContent": "center",
+        },
+      ]
+    }
+    testID="theme-toggle"
+  >
+    <ViewManagerAdapter_SymbolModule
+      animated={false}
+      colors={[]}
+      name="sun.max.fill"
+      size={24}
+      style={
+        [
+          {
+            "height": 24,
+            "width": 24,
+          },
+          {
+            "height": 24,
+            "width": 24,
+          },
+        ]
+      }
+      tint={4293257195}
+      tintColor="#e5e7eb"
+      type="monochrome"
+    />
+  </View>
+</View>
+`;

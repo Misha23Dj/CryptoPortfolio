@@ -115,6 +115,5 @@ export const buildPortfolioView = ({
       change24hPercentText: formatPercent(weightedChange),
       change24hIsPositive: weightedChange >= 0,
     },
-    lastUpdatedText: "Just now",
   };
 };

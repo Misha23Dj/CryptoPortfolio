@@ -1,15 +1,15 @@
 import ErrorBanner from "@/components/ErrorBanner";
+import PortfolioHeader from "@/components/Header/PortfolioHeader";
 import HoldingRow from "@/components/HoldingRow";
-import PortfolioHeader from "@/components/PortfolioHeader";
 import SkeletonRow from "@/components/SkeletonRow";
 
 import { useTheme } from "@/theme/ThemeProvider";
 import { LegendList } from "@legendapp/list";
 import React, { useMemo, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
+import { usePortfolioQuery } from "../queries/usePortfolioQuery";
 import { Scenario } from "./utils/getPortfolio";
 import { SortMode, sortRows } from "./utils/sortRows";
-import { usePortfolioQuery } from "./utils/usePortfolioQuery";
 
 const HoldingsList: React.FC<{ testID?: string }> = ({ testID }) => {
   const theme = useTheme();
@@ -38,7 +38,6 @@ const HoldingsList: React.FC<{ testID?: string }> = ({ testID }) => {
         ListHeaderComponent={<PortfolioHeader scenario={scenario} />}
         refreshing={refreshing}
         onRefresh={refetch}
-        extraData={data?.lastUpdatedText}
         contentContainerStyle={{ paddingBottom: 24, backgroundColor: theme.bg }}
         ListEmptyComponent={
           refreshing ? (
