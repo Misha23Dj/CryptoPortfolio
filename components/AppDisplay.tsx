@@ -1,8 +1,8 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 
+import ThemeFade from "@/theme/ThemeFade";
 import { useTheme } from "@/theme/ThemeProvider";
-import ThemeToggle from "@/theme/ThemeToggle";
 import HoldingsList from "./HoldingsList";
 
 const data = [
@@ -46,7 +46,7 @@ const AppDisplay = () => {
       testID="app-display"
     >
       <HoldingsList data={data} />
-      <ThemeToggle />
+      <ThemeFade />
     </View>
   );
 };
