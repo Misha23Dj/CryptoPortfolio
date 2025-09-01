@@ -1,75 +1,57 @@
+import ErrorBanner from "@/components/ErrorBanner";
+import HoldingRow from "@/components/HoldingRow";
+import PortfolioHeader from "@/components/PortfolioHeader";
+import SkeletonRow from "@/components/SkeletonRow";
+
+import { useTheme } from "@/theme/ThemeProvider";
 import { LegendList } from "@legendapp/list";
-import React, { useMemo } from "react";
-import { useTheme } from "../theme/ThemeProvider";
-import HoldingRow from "./HoldingRow";
-import PortfolioHeader from "./PortfolioHeader";
-import { formatMoney, formatPercent, signedMoney } from "./utils/format";
+import React, { useMemo, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
+import { Scenario } from "./utils/getPortfolio";
+import { SortMode, sortRows } from "./utils/sortRows";
+import { usePortfolioQuery } from "./utils/usePortfolioQuery";
 
-type Item = {
-  id: string;
-  symbol: string;
-  name: string;
-  price?: number;
-  chg24?: number;
-  qty?: number;
-  pl?: number;
-  plPct?: number;
-};
-
-type Props = { data: Item[]; testID?: string };
-
-const HoldingsList: React.FC<Props> = ({ data, testID }) => {
+const HoldingsList: React.FC<{ testID?: string }> = ({ testID }) => {
   const theme = useTheme();
+  const [scenario] = useState<Scenario>("random");
+  const [sortMode] = useState<SortMode>("value");
 
-  const {
-    balanceAmountText,
-    profitLossSignedAmountText,
-    profitLossPercentText,
-    change24hPercentText,
-    change24hIsPositive,
-  } = useMemo(() => {
-    const positionValues = data.map((d) => (d.price ?? 0) * (d.qty ?? 0));
-    const totalValue = positionValues.reduce((a, b) => a + b, 0);
-    const totalPL = data.reduce((a, d) => a + (d.pl ?? 0), 0);
-    const totalCost = totalValue - totalPL;
-
-    const weightedChangeNumerator = data.reduce(
-      (acc, d, i) => acc + positionValues[i] * (d.chg24 ?? 0),
-      0
-    );
-    const weightedChange =
-      totalValue > 0 ? weightedChangeNumerator / totalValue : 0;
-
-    return {
-      balanceAmountText: formatMoney(totalValue),
-      profitLossSignedAmountText: signedMoney(totalPL),
-      profitLossPercentText:
-        totalCost > 0 ? formatPercent(totalPL / totalCost) : "0.00%",
-      change24hPercentText: formatPercent(weightedChange),
-      change24hIsPositive: weightedChange >= 0,
-    };
-  }, [data]);
-
-  const headerElement = (
-    <PortfolioHeader
-      balanceAmountText={balanceAmountText}
-      profitLossSignedAmountText={profitLossSignedAmountText}
-      profitLossPercentText={profitLossPercentText}
-      change24hPercentText={change24hPercentText}
-      change24hIsPositive={change24hIsPositive}
-      timeframeLabel="24h"
-      lastUpdatedText="Just now"
-    />
+  const { data, isLoading, isRefetching, error, refetch } =
+    usePortfolioQuery(scenario);
+  const refreshing = isLoading || isRefetching;
+  const rows = useMemo(
+    () => (data ? sortRows(data.rows, sortMode) : []),
+    [data, sortMode]
   );
-
+  console.log(data);
   return (
-    <LegendList
-      data={data}
-      keyExtractor={(i) => i.id}
-      renderItem={({ item }) => <HoldingRow item={item} />}
-      ListHeaderComponent={headerElement}
-      contentContainerStyle={{ paddingBottom: 24, backgroundColor: theme.bg }}
-    />
+    <View testID={testID} style={{ flex: 1 }}>
+      {error ? (
+        <ErrorBanner
+          message={error instanceof Error ? error.message : "Error"}
+        />
+      ) : null}
+      <LegendList
+        data={rows}
+        keyExtractor={(i) => i.id}
+        renderItem={({ item }) => <HoldingRow item={item} />}
+        ListHeaderComponent={<PortfolioHeader scenario={scenario} />}
+        refreshing={refreshing}
+        onRefresh={refetch}
+        extraData={data?.lastUpdatedText}
+        contentContainerStyle={{ paddingBottom: 24, backgroundColor: theme.bg }}
+        ListEmptyComponent={
+          refreshing ? (
+            <View>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonRow key={`sk-${i}`} />
+              ))}
+              <ActivityIndicator style={{ marginTop: 16 }} />
+            </View>
+          ) : undefined
+        }
+      />
+    </View>
   );
 };
 

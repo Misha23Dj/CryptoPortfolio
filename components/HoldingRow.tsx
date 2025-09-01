@@ -1,124 +1,155 @@
-import {
-  directionSymbol,
-  formatMoney,
-  formatPercent,
-  signedMoney,
-} from "@/components/utils/format";
+import type { HoldingRowView } from "@/components/utils/buildPortfolioView";
+import { useTheme } from "@/theme/ThemeProvider";
+import { SymbolView } from "expo-symbols";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { useTheme } from "../theme/ThemeProvider";
 
-type Item = {
-  id: string;
-  symbol: string;
-  name: string;
-  price?: number;
-  chg24?: number;
-  qty?: number;
-  pl?: number;
-  plPct?: number;
-};
-
-type Props = { item: Item };
+type Props = { item: HoldingRowView };
 
 const HoldingRow: React.FC<Props> = ({ item }) => {
   const theme = useTheme();
 
-  const hasPrice = item.price != null;
-  const hasQty = item.qty != null;
+  const changeIsNegative = item.change24hPercentText.startsWith("-");
+  const changeColor = changeIsNegative ? theme.negative : theme.positive;
+  const changeArrow = changeIsNegative ? "arrow.down" : "arrow.up";
 
-  const change24hPercent = item.chg24 ?? 0;
-  const profitLossAmount = item.pl ?? 0;
-  const profitLossPercent = item.plPct ?? 0;
-
-  const positionValueAmount =
-    hasPrice && hasQty ? (item.qty as number) * (item.price as number) : 0;
-
-  const currentPriceAmountText = hasPrice
-    ? formatMoney(item.price as number)
-    : "—";
-  const change24hPercentText = formatPercent(change24hPercent);
-  const change24hDirectionSymbol = directionSymbol(change24hPercent);
-  const change24hDirectionColor =
-    change24hPercent > 0
-      ? theme.positive
-      : change24hPercent < 0
-      ? theme.negative
-      : theme.muted;
-
-  const positionValueAmountText =
-    hasPrice && hasQty ? formatMoney(positionValueAmount) : "—";
-
-  const profitLossSignedAmountText = signedMoney(profitLossAmount);
-  const profitLossPercentText = formatPercent(profitLossPercent);
-  const profitLossColor =
-    profitLossAmount >= 0 ? theme.positive : theme.negative;
+  const plIsNegative = item.profitLossIsNegative;
+  const plColor = plIsNegative ? theme.negative : theme.positive;
+  const plArrow = plIsNegative ? "arrow.down" : "arrow.up";
 
   return (
-    <View style={[styles.row, { borderBottomColor: theme.border }]}>
-      <View style={{ flex: 1.2 }}>
+    <View
+      style={[
+        styles.row,
+        { borderColor: theme.border, backgroundColor: theme.bg },
+      ]}
+      testID="holding-row"
+    >
+      <View style={styles.stack}>
+        <View style={styles.topLine}>
+          <Text
+            style={[styles.nameText, { color: theme.text }]}
+            testID="assetNameText"
+          >
+            {item.name}
+          </Text>
+          <Text
+            style={[styles.priceText, { color: theme.text }]}
+            testID="currentPriceText"
+          >
+            {item.currentPriceAmountText}
+          </Text>
+          <View style={styles.inlineChange} testID="changeInline">
+            <SymbolView
+              name={changeArrow}
+              size={12}
+              tintColor={changeColor}
+              style={styles.icon12}
+            />
+            <Text
+              style={[styles.changeText, { color: changeColor }]}
+              testID="change24hText"
+            >
+              {item.change24hPercentText}
+            </Text>
+          </View>
+        </View>
+
         <Text
-          style={[styles.name, { color: theme.text }]}
-          testID="assetNameText"
-        >
-          {item.name}
-        </Text>
-        <Text
-          style={{ color: theme.muted, fontSize: 12 }}
+          style={[styles.symbolText, { color: theme.muted }]}
           testID="assetSymbolText"
         >
           {item.symbol}
         </Text>
-      </View>
 
-      <View style={{ flex: 2, alignItems: "flex-end" }}>
-        <Text
-          style={{ color: theme.text, fontSize: 14, fontWeight: "500" }}
-          testID="currentPriceAmountText"
-        >
-          {currentPriceAmountText}
-        </Text>
+        <View style={styles.metricsGrid}>
+          <View style={styles.metricCell}>
+            <Text style={[styles.metricLabel, { color: theme.muted }]}>
+              Qty
+            </Text>
+            <Text
+              style={[styles.metricValue, { color: theme.text }]}
+              testID="quantityText"
+            >
+              {item.quantityText}
+            </Text>
+          </View>
 
-        <View style={{ flexDirection: "row", marginTop: 2 }}>
-          <Text
-            style={{ color: theme.muted, marginRight: 4 }}
-            testID="change24hDirectionSymbol"
-          >
-            {change24hDirectionSymbol}
-          </Text>
-          <Text
-            style={{ color: change24hDirectionColor }}
-            testID="change24hPercentText"
-          >
-            {change24hPercentText}
-          </Text>
-        </View>
+          <View style={styles.metricCell}>
+            <Text style={[styles.metricLabel, { color: theme.muted }]}>
+              Buy Price
+            </Text>
+            <Text
+              style={[styles.metricValue, { color: theme.text }]}
+              testID="purchaseUnitPriceText"
+            >
+              {item.purchaseUnitPriceAmountText}
+            </Text>
+          </View>
 
-        <Text
-          style={{
-            color: theme.text,
-            fontSize: 16,
-            fontWeight: "700",
-            marginTop: 2,
-          }}
-          testID="positionValueAmountText"
-        >
-          {positionValueAmountText}
-        </Text>
+          <View style={styles.metricCell}>
+            <Text style={[styles.metricLabel, { color: theme.muted }]}>
+              Current Value
+            </Text>
+            <Text
+              style={[styles.metricValue, { color: theme.text }]}
+              testID="currentValueText"
+            >
+              {item.currentValueAmountText}
+            </Text>
+          </View>
 
-        <View style={{ flexDirection: "row", gap: 6, marginTop: 2 }}>
-          <Text
-            style={{ color: profitLossColor }}
-            testID="profitLossSignedAmountText"
-          >
-            {profitLossSignedAmountText}
-          </Text>
-          <Text
-            style={{ color: profitLossColor }}
-            testID="profitLossPercentText"
-          >
-            {profitLossPercentText}
-          </Text>
+          <View style={styles.metricCell}>
+            <Text style={[styles.metricLabel, { color: theme.muted }]}>
+              Purchase Cost
+            </Text>
+            <Text
+              style={[styles.metricValue, { color: theme.text }]}
+              testID="purchaseCostText"
+            >
+              {item.purchaseCostAmountText}
+            </Text>
+          </View>
+
+          <View style={styles.metricCell}>
+            <Text style={[styles.metricLabel, { color: theme.muted }]}>
+              P/L
+            </Text>
+            <View style={styles.inlineValue}>
+              <SymbolView
+                name={plArrow}
+                size={12}
+                tintColor={plColor}
+                style={styles.icon12}
+              />
+              <Text
+                style={[styles.metricValue, { color: plColor }]}
+                testID="plAmountText"
+              >
+                {item.profitLossSignedAmountText}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.metricCell}>
+            <Text style={[styles.metricLabel, { color: theme.muted }]}>
+              % Change
+            </Text>
+            <View style={styles.inlineValue}>
+              <SymbolView
+                name={plArrow}
+                size={12}
+                tintColor={plColor}
+                style={styles.icon12}
+              />
+              <Text
+                style={[styles.metricValue, { color: plColor }]}
+                testID="personalChangePercentText"
+              >
+                {item.personalChangePercentText}
+              </Text>
+            </View>
+          </View>
         </View>
       </View>
     </View>
@@ -127,13 +158,33 @@ const HoldingRow: React.FC<Props> = ({ item }) => {
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: "row",
-    gap: 12,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  name: { fontSize: 14, fontWeight: "600" },
+  stack: { alignItems: "flex-start", gap: 8 },
+  topLine: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: 12,
+    flexWrap: "wrap",
+  },
+  nameText: { fontSize: 16, fontWeight: "800" },
+  priceText: { fontSize: 16, fontWeight: "800" },
+  inlineChange: { flexDirection: "row", alignItems: "center", gap: 6 },
+  changeText: { fontSize: 12, fontWeight: "800" },
+  icon12: { width: 12, height: 12 },
+  symbolText: { fontSize: 12, fontWeight: "700", letterSpacing: 0.3 },
+  metricsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    width: "100%",
+  },
+  metricCell: { width: "48%" },
+  metricLabel: { fontSize: 11, fontWeight: "600" },
+  metricValue: { fontSize: 13, fontWeight: "800" },
+  inlineValue: { flexDirection: "row", alignItems: "center", gap: 6 },
 });
 
 export default HoldingRow;

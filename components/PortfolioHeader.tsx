@@ -1,30 +1,109 @@
+import { useTheme } from "@/theme/ThemeProvider";
 import ThemeToggle from "@/theme/ThemeToggle";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { useTheme } from "../theme/ThemeProvider";
 import MetricStat from "./MetricStat";
+import { Scenario } from "./utils/getPortfolio";
 
-type Props = {
-  balanceAmountText: string;
-  profitLossSignedAmountText: string;
-  profitLossPercentText: string;
-  change24hPercentText: string;
-  change24hIsPositive: boolean;
-  timeframeLabel: string;
-  lastUpdatedText: string;
-};
+import { formatRelativeTime } from "./utils/formatRelativeTime";
+import { usePortfolioQuery } from "./utils/usePortfolioQuery";
 
-const PortfolioHeader: React.FC<Props> = ({
-  balanceAmountText,
-  profitLossSignedAmountText,
-  profitLossPercentText,
-  change24hPercentText,
-  change24hIsPositive,
-  timeframeLabel,
-  lastUpdatedText,
-}) => {
+type Props = { scenario: Scenario };
+
+const PortfolioHeader: React.FC<Props> = ({ scenario }) => {
   const theme = useTheme();
+  const { data, isLoading, isSuccess } = usePortfolioQuery(scenario);
+  const [lastUpdatedTimestampMs, setLastUpdatedTimestampMs] = useState<
+    number | undefined
+  >(undefined);
+  const [nowTimestampMs, setNowTimestampMs] = useState<number>(() =>
+    Date.now()
+  );
 
+  useEffect(() => {
+    if (isSuccess) setLastUpdatedTimestampMs(Date.now());
+  }, [isSuccess]);
+
+  useEffect(() => {
+    if (!lastUpdatedTimestampMs) return;
+    const id = setInterval(() => setNowTimestampMs(Date.now()), 30_000);
+    return () => clearInterval(id);
+  }, [lastUpdatedTimestampMs]);
+  if (!data || isLoading) {
+    const tileBg =
+      theme.barStyle === "light"
+        ? "rgba(255,255,255,0.06)"
+        : "rgba(0,0,0,0.06)";
+    return (
+      <View
+        style={[styles.wrap, { backgroundColor: theme.bg }]}
+        testID="portfolio-header"
+      >
+        <View style={styles.topRow}>
+          <Text style={[styles.title, { color: theme.text }]}>Portfolio</Text>
+          <ThemeToggle />
+        </View>
+        <View
+          style={[
+            styles.hero,
+            {
+              backgroundColor: theme.card,
+              borderColor: theme.border,
+              shadowColor: theme.text,
+            },
+          ]}
+        >
+          <Text style={[styles.balanceLabel, { color: theme.muted }]}>
+            Total Balance
+          </Text>
+          <View
+            style={{
+              width: 180,
+              height: 32,
+              borderRadius: 8,
+              backgroundColor: tileBg,
+              marginTop: 6,
+            }}
+          />
+          <View style={styles.statsRow}>
+            <View
+              style={{
+                width: "48%",
+                height: 56,
+                borderRadius: 12,
+                backgroundColor: tileBg,
+              }}
+            />
+            <View
+              style={{
+                width: "48%",
+                height: 56,
+                borderRadius: 12,
+                backgroundColor: tileBg,
+              }}
+            />
+          </View>
+          <View
+            style={{
+              width: 100,
+              height: 12,
+              borderRadius: 6,
+              backgroundColor: tileBg,
+              marginTop: 12,
+            }}
+          />
+        </View>
+      </View>
+    );
+  }
+
+  const {
+    balanceAmountText,
+    profitLossSignedAmountText,
+    profitLossPercentText,
+    change24hIsPositive,
+    change24hPercentText,
+  } = data.totals;
   const profitLossIsNegative = profitLossSignedAmountText.startsWith("-");
   const profitLossColor = profitLossIsNegative
     ? theme.negative
@@ -42,6 +121,10 @@ const PortfolioHeader: React.FC<Props> = ({
   const change24hUnsignedPercentText = change24hPercentText.replace(
     /^[-+]/,
     ""
+  );
+  const lastUpdatedText = formatRelativeTime(
+    lastUpdatedTimestampMs,
+    nowTimestampMs
   );
 
   return (
@@ -86,7 +169,7 @@ const PortfolioHeader: React.FC<Props> = ({
           <MetricStat
             iconName={change24hIsPositive ? "arrow.up" : "arrow.down"}
             primaryText={change24hUnsignedPercentText}
-            secondaryText={timeframeLabel}
+            secondaryText="24h"
             primaryColor={changeColor}
             secondaryColor={theme.muted}
             testID="metric-24h"
@@ -97,7 +180,7 @@ const PortfolioHeader: React.FC<Props> = ({
           style={[styles.updatedCentered, { color: theme.muted }]}
           testID="last-updated-text"
         >
-          {lastUpdatedText}
+          Last Updated: {lastUpdatedText}
         </Text>
       </View>
     </View>
