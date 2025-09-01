@@ -56,7 +56,7 @@ const MetricStat: React.FC<Props> = ({
 
 const styles = StyleSheet.create({
   cell: {
-    width: "48%",
+    width: "100%",
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 14,
@@ -70,13 +70,13 @@ const styles = StyleSheet.create({
     maxWidth: "100%",
   },
   primary: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "800",
     textAlign: "center",
     flexShrink: 1,
   },
   secondary: {
-    fontSize: 13,
+    fontSize: 16,
     fontWeight: "600",
     textAlign: "center",
     marginTop: 2,

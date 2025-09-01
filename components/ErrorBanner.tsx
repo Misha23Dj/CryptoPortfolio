@@ -6,6 +6,7 @@ const ErrorBanner: React.FC<{ message: string }> = ({ message }) => {
   const theme = useTheme();
   return (
     <View
+      testID="error-banner"
       style={[
         styles.wrap,
         { backgroundColor: theme.negative + "11", borderColor: theme.negative },

@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`matches snapshot 1`] = `
+<View
+  style={
+    [
+      {
+        "borderRadius": 10,
+        "borderWidth": 0.5,
+        "marginBottom": 12,
+        "marginHorizontal": 16,
+        "padding": 10,
+      },
+      {
+        "backgroundColor": "#dc262611",
+        "borderColor": "#dc2626",
+      },
+    ]
+  }
+  testID="error-banner"
+>
+  <Text
+    style={
+      [
+        {
+          "fontWeight": "600",
+        },
+        {
+          "color": "#dc2626",
+        },
+      ]
+    }
+  >
+    Something went wrong
+  </Text>
+</View>
+`;

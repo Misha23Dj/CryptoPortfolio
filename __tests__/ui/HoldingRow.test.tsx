@@ -13,7 +13,7 @@ jest.mock("expo-symbols", () => ({
   SymbolView: () => null,
 }));
 
-const renderWithTheme = (ui: React.ReactElement) =>
+export const renderWithTheme = (ui: React.ReactElement) =>
   render(<ThemeProvider>{ui}</ThemeProvider>);
 
 const makeRow = (

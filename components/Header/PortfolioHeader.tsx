@@ -2,7 +2,7 @@ import { usePortfolioQuery } from "@/queries/usePortfolioQuery";
 import { useTheme } from "@/theme/ThemeProvider";
 import ThemeToggle from "@/theme/ThemeToggle";
 import React, { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { formatRelativeTime } from "../utils/formatRelativeTime";
 import { Scenario } from "../utils/getPortfolio";
 import MetricStat from "./MetricStat";
@@ -129,16 +129,8 @@ const PortfolioHeader: React.FC<Props> = ({ scenario }) => {
           <View style={styles.statsRow}>
             <View
               style={{
-                width: "48%",
-                height: 56,
-                borderRadius: 12,
-                backgroundColor: tileBg,
-              }}
-            />
-            <View
-              style={{
-                width: "48%",
-                height: 56,
+                width: "100%",
+                height: 65,
                 borderRadius: 12,
                 backgroundColor: tileBg,
               }}
@@ -193,10 +185,12 @@ const PortfolioHeader: React.FC<Props> = ({ scenario }) => {
       style={[styles.wrap, { backgroundColor: theme.bg }]}
       testID="portfolio-header"
     >
-      <View style={styles.topRow}>
-        <Text style={[styles.title, { color: theme.text }]}>Portfolio</Text>
-        <ThemeToggle />
-      </View>
+      {Platform.OS === "ios" ? (
+        <View style={styles.topRow}>
+          <Text style={[styles.title, { color: theme.text }]}>Portfolio</Text>
+          <ThemeToggle />
+        </View>
+      ) : null}
 
       <View
         style={[
@@ -232,14 +226,6 @@ const PortfolioHeader: React.FC<Props> = ({ scenario }) => {
             primaryColor={profitLossColor}
             secondaryColor={profitLossColor}
             testID="metric-pl"
-          />
-          <MetricStat
-            iconName={change24hIsPositive ? "arrow.up" : "arrow.down"}
-            primaryText={change24hUnsignedPercentText}
-            secondaryText="24h"
-            primaryColor={changeColor}
-            secondaryColor={theme.muted}
-            testID="metric-24h"
           />
         </View>
 

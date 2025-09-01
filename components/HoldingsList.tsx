@@ -48,9 +48,7 @@ const HoldingsList: React.FC<{ testID?: string }> = ({ testID }) => {
               {Array.from({ length: 6 }).map((_, i) => (
                 <SkeletonRow key={`sk-${i}`} />
               ))}
-              <ActivityIndicator
-                style={{ marginTop: 16, backgroundColor: "yellow" }}
-              />
+              <ActivityIndicator style={{ marginTop: 16 }} />
             </View>
           ) : undefined
         }
