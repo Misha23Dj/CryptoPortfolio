@@ -23,7 +23,7 @@ const HoldingsList: React.FC<{ testID?: string }> = ({ testID }) => {
     () => (data ? sortRows(data.rows, sortMode) : []),
     [data, sortMode]
   );
-  console.log(data);
+
   return (
     <View testID={testID} style={{ flex: 1 }}>
       {error ? (
