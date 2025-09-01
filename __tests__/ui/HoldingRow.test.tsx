@@ -126,11 +126,14 @@ describe("HoldingRow", () => {
 
     renderWithTheme(<HoldingRow item={row} />);
 
-    expect(screen.getByTestId("currentPriceText")).toHaveTextContent("$0.00");
-    expect(screen.getByTestId("currentValueText")).toHaveTextContent("$0.00");
-    expect(screen.getByTestId("plAmountText")).toHaveTextContent("-$320.00");
-    expect(screen.getByTestId("personalChangePercentText")).toHaveTextContent(
-      "-100.00%"
+    expect(screen.getByTestId("currentPriceText")).toHaveTextContent(
+      "Price unavailable"
     );
+    expect(screen.getByTestId("currentValueText")).toHaveTextContent("—");
+    expect(screen.getByTestId("plAmountText")).toHaveTextContent("—");
+    expect(screen.getByTestId("personalChangePercentText")).toHaveTextContent(
+      "—"
+    );
+    expect(screen.getByTestId("change24hText")).toHaveTextContent("0.00%");
   });
 });

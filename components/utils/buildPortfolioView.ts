@@ -43,20 +43,24 @@ export const buildPortfolioView = ({
 
   const computed = holdings.map((h) => {
     const priceEntry = priceBySymbol.get(h.symbol);
-    const hasLivePrice = typeof priceEntry?.price === "number";
-    const price = hasLivePrice ? (priceEntry!.price as number) : 0;
+    const hasPrice =
+      typeof priceEntry?.price === "number" &&
+      Number.isFinite(priceEntry.price as number);
+    const price = hasPrice ? (priceEntry!.price as number) : 0;
     const change24h =
-      hasLivePrice && typeof priceEntry?.chg24 === "number"
+      hasPrice && typeof priceEntry?.chg24 === "number"
         ? (priceEntry!.chg24 as number)
         : 0;
     const qty = h.qty ?? 0;
     const purchaseCostTotal = h.cost ?? 0;
     const purchaseUnitPrice = qty > 0 ? purchaseCostTotal / qty : 0;
     const currentValue = price * qty;
-    const profitLoss =
-      h.pl ?? (h.cost != null ? currentValue - (h.cost as number) : 0);
+
+    const derivedPL = h.cost != null ? currentValue - (h.cost as number) : 0;
+    const profitLoss = typeof h.pl === "number" ? h.pl : derivedPL;
+    const derivedPLPct = h.cost ? (h.cost > 0 ? profitLoss / h.cost : 0) : 0;
     const profitLossPercent =
-      h.plPct ?? (h.cost ? (h.cost > 0 ? profitLoss / h.cost : 0) : 0);
+      typeof h.plPct === "number" ? h.plPct : derivedPLPct;
 
     return {
       id: h.id,
@@ -66,6 +70,7 @@ export const buildPortfolioView = ({
       purchaseCostTotal,
       purchaseUnitPrice,
       price,
+      hasPrice,
       change24h,
       currentValue,
       profitLoss,
@@ -77,10 +82,16 @@ export const buildPortfolioView = ({
     (s, r) => s + r.purchaseCostTotal,
     0
   );
-  const totalCurrentValue = computed.reduce((s, r) => s + r.currentValue, 0);
-  const totalProfitLoss = computed.reduce((s, r) => s + r.profitLoss, 0);
+  const totalCurrentValue = computed.reduce(
+    (s, r) => s + (r.hasPrice ? r.currentValue : 0),
+    0
+  );
+  const totalProfitLoss = computed.reduce(
+    (s, r) => s + (r.hasPrice ? r.profitLoss : 0),
+    0
+  );
   const weightedChangeNumerator = computed.reduce(
-    (s, r) => s + r.currentValue * r.change24h,
+    (s, r) => s + (r.hasPrice ? r.currentValue * r.change24h : 0),
     0
   );
   const weightedChange =
@@ -93,12 +104,18 @@ export const buildPortfolioView = ({
     quantityText: r.qty.toString(),
     purchaseUnitPriceAmountText: formatMoney(r.purchaseUnitPrice),
     purchaseCostAmountText: formatMoney(r.purchaseCostTotal),
-    currentPriceAmountText: formatMoney(r.price),
-    currentValueAmountText: formatMoney(r.currentValue),
-    change24hPercentText: formatPercent(r.change24h),
-    personalChangePercentText: formatPercent(r.profitLossPercent),
-    profitLossSignedAmountText: signedMoney(r.profitLoss),
-    profitLossPercentText: formatPercent(r.profitLossPercent),
+    currentPriceAmountText: r.hasPrice
+      ? formatMoney(r.price)
+      : "Price unavailable",
+    currentValueAmountText: r.hasPrice ? formatMoney(r.currentValue) : "—",
+    change24hPercentText: r.hasPrice ? formatPercent(r.change24h) : "0.00%",
+    personalChangePercentText: r.hasPrice
+      ? formatPercent(r.profitLossPercent)
+      : "—",
+    profitLossSignedAmountText: r.hasPrice ? signedMoney(r.profitLoss) : "—",
+    profitLossPercentText: r.hasPrice
+      ? formatPercent(r.profitLossPercent)
+      : "—",
     profitLossIsNegative: r.profitLoss < 0,
   }));
 
@@ -115,5 +132,6 @@ export const buildPortfolioView = ({
       change24hPercentText: formatPercent(weightedChange),
       change24hIsPositive: weightedChange >= 0,
     },
+    lastUpdatedText: "Just now",
   };
 };

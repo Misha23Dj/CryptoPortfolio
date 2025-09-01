@@ -33,13 +33,14 @@ it("computes row texts and totals correctly", () => {
   expect(totals.profitLossPercentText).toBe("181.25%");
   expect(totals.change24hPercentText).toBe("0.44%");
 });
-
-it("handles missing prices as zero without NaN", () => {
+it("handles missing prices without NaN and marks unavailable", () => {
   const partial: PriceInput[] = [{ symbol: "BTC", price: 63000, chg24: 0.02 }];
   const view = buildPortfolioView({ holdings, prices: partial });
+
   const eth = view.rows.find((r) => r.symbol === "ETH")!;
-  expect(eth.currentPriceAmountText).toBe("$0.00");
-  expect(eth.currentValueAmountText).toBe("$0.00");
-  expect(eth.profitLossSignedAmountText).toBe("-$3,900.00");
-  expect(eth.profitLossPercentText).toBe("-100.00%");
+  expect(eth.currentPriceAmountText).toBe("Price unavailable");
+  expect(eth.currentValueAmountText).toBe("—");
+  expect(eth.profitLossSignedAmountText).toBe("—");
+  expect(eth.profitLossPercentText).toBe("—");
+  expect(eth.personalChangePercentText).toBe("—");
 });

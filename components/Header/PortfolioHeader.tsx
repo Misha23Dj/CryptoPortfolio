@@ -1,34 +1,95 @@
+import { usePortfolioQuery } from "@/queries/usePortfolioQuery";
 import { useTheme } from "@/theme/ThemeProvider";
 import ThemeToggle from "@/theme/ThemeToggle";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { formatRelativeTime } from "../utils/formatRelativeTime";
 import { Scenario } from "../utils/getPortfolio";
 import MetricStat from "./MetricStat";
-
-import { usePortfolioQuery } from "../../queries/usePortfolioQuery";
-import { formatRelativeTime } from "../utils/formatRelativeTime";
 
 type Props = { scenario: Scenario };
 
 const PortfolioHeader: React.FC<Props> = ({ scenario }) => {
   const theme = useTheme();
-  const { data, isLoading, isSuccess } = usePortfolioQuery(scenario);
-  const [lastUpdatedTimestampMs, setLastUpdatedTimestampMs] = useState<
-    number | undefined
-  >(undefined);
-  const [nowTimestampMs, setNowTimestampMs] = useState<number>(() =>
-    Date.now()
+  const { data, isLoading, isError, isSuccess, refetch, dataUpdatedAt } =
+    usePortfolioQuery(scenario);
+
+  const [lastUpdatedMs, setLastUpdatedMs] = useState<number | undefined>(
+    undefined
   );
+  const [nowMs, setNowMs] = useState<number>(() => Date.now());
 
   useEffect(() => {
-    if (isSuccess) setLastUpdatedTimestampMs(Date.now());
-  }, [isSuccess]);
+    if (isSuccess) setLastUpdatedMs(Date.now());
+  }, [isSuccess, dataUpdatedAt]);
 
   useEffect(() => {
-    if (!lastUpdatedTimestampMs) return;
-    const id = setInterval(() => setNowTimestampMs(Date.now()), 30_000);
+    if (!lastUpdatedMs) return;
+    const id = setInterval(() => setNowMs(Date.now()), 30_000);
     return () => clearInterval(id);
-  }, [lastUpdatedTimestampMs]);
+  }, [lastUpdatedMs]);
+
+  if (isError) {
+    const tileBg =
+      theme.barStyle === "light"
+        ? "rgba(255,255,255,0.06)"
+        : "rgba(0,0,0,0.06)";
+    return (
+      <View
+        style={[styles.wrap, { backgroundColor: theme.bg }]}
+        testID="portfolio-header"
+      >
+        <View style={styles.topRow}>
+          <Text style={[styles.title, { color: theme.text }]}>Portfolio</Text>
+          <ThemeToggle />
+        </View>
+        <View
+          style={[
+            styles.hero,
+            {
+              backgroundColor: theme.card,
+              borderColor: theme.border,
+              shadowColor: theme.text,
+              alignItems: "center",
+            },
+          ]}
+        >
+          <Text
+            style={{
+              color: theme.negative,
+              fontSize: 14,
+              fontWeight: "700",
+              marginBottom: 12,
+            }}
+          >
+            Couldn't load prices
+          </Text>
+          <Pressable
+            onPress={() => refetch()}
+            style={{
+              backgroundColor: theme.text,
+              paddingHorizontal: 14,
+              paddingVertical: 8,
+              borderRadius: 10,
+            }}
+            testID="retry-button"
+          >
+            <Text style={{ color: theme.bg, fontWeight: "800" }}>Retry</Text>
+          </Pressable>
+          <View
+            style={{
+              width: 180,
+              height: 32,
+              borderRadius: 8,
+              backgroundColor: tileBg,
+              marginTop: 16,
+            }}
+          />
+        </View>
+      </View>
+    );
+  }
+
   if (!data || isLoading) {
     const tileBg =
       theme.barStyle === "light"
@@ -85,7 +146,7 @@ const PortfolioHeader: React.FC<Props> = ({ scenario }) => {
           </View>
           <View
             style={{
-              width: 100,
+              width: 140,
               height: 12,
               borderRadius: 6,
               backgroundColor: tileBg,
@@ -103,7 +164,9 @@ const PortfolioHeader: React.FC<Props> = ({ scenario }) => {
     profitLossPercentText,
     change24hIsPositive,
     change24hPercentText,
+    totalCostAmountText,
   } = data.totals;
+
   const profitLossIsNegative = profitLossSignedAmountText.startsWith("-");
   const profitLossColor = profitLossIsNegative
     ? theme.negative
@@ -122,10 +185,8 @@ const PortfolioHeader: React.FC<Props> = ({ scenario }) => {
     /^[-+]/,
     ""
   );
-  const lastUpdatedText = formatRelativeTime(
-    lastUpdatedTimestampMs,
-    nowTimestampMs
-  );
+
+  const refreshedAgo = formatRelativeTime(lastUpdatedMs, nowMs);
 
   return (
     <View
@@ -156,6 +217,12 @@ const PortfolioHeader: React.FC<Props> = ({ scenario }) => {
         >
           {balanceAmountText}
         </Text>
+        <Text
+          style={{ color: theme.muted, marginTop: 6 }}
+          testID="total-cost-text"
+        >
+          Total Cost {totalCostAmountText}
+        </Text>
 
         <View style={styles.statsRow}>
           <MetricStat
@@ -180,7 +247,7 @@ const PortfolioHeader: React.FC<Props> = ({ scenario }) => {
           style={[styles.updatedCentered, { color: theme.muted }]}
           testID="last-updated-text"
         >
-          Last Updated: {lastUpdatedText}
+          Last refreshed: {refreshedAgo}
         </Text>
       </View>
     </View>

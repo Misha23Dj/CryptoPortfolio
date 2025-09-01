@@ -8,6 +8,7 @@ import { LegendList } from "@legendapp/list";
 import React, { useMemo, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { usePortfolioQuery } from "../queries/usePortfolioQuery";
+import Empty from "./Empty";
 import { Scenario } from "./utils/getPortfolio";
 import { SortMode, sortRows } from "./utils/sortRows";
 
@@ -16,13 +17,15 @@ const HoldingsList: React.FC<{ testID?: string }> = ({ testID }) => {
   const [scenario] = useState<Scenario>("random");
   const [sortMode] = useState<SortMode>("value");
 
-  const { data, isLoading, isRefetching, error, refetch } =
+  const { data, isLoading, isRefetching, error, refetch, isFetching } =
     usePortfolioQuery(scenario);
   const refreshing = isLoading || isRefetching;
   const rows = useMemo(
     () => (data ? sortRows(data.rows, sortMode) : []),
     [data, sortMode]
   );
+
+  if (!isFetching && rows.length === 0) return <Empty />;
 
   return (
     <View testID={testID} style={{ flex: 1 }}>
@@ -45,7 +48,9 @@ const HoldingsList: React.FC<{ testID?: string }> = ({ testID }) => {
               {Array.from({ length: 6 }).map((_, i) => (
                 <SkeletonRow key={`sk-${i}`} />
               ))}
-              <ActivityIndicator style={{ marginTop: 16 }} />
+              <ActivityIndicator
+                style={{ marginTop: 16, backgroundColor: "yellow" }}
+              />
             </View>
           ) : undefined
         }

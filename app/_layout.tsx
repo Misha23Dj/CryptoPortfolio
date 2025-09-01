@@ -1,4 +1,4 @@
-import ScreenContainer from "@/components/ScreenContainer";
+import ScreenContainer from "@/theme/ScreenContainer";
 import ThemeProvider from "@/theme/ThemeProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useFonts } from "expo-font";
@@ -13,7 +13,6 @@ const RootLayout = () => {
   const queryClient = new QueryClient();
 
   if (!loaded) {
-    // Async font loading only occurs in development
     return null;
   }
 
